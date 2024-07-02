@@ -53,7 +53,6 @@ def loader_thread(current_task: list, num_of_converts: int, line_num: int):
         symbol_iter += 1
         time.sleep(0.1)
         
-        
 file_counter = 0
 
 def transform_and_save(url_list: list, path_to_save = "./transformed_files/"): 
@@ -104,7 +103,13 @@ def main():
         if input() == "Y":
             result = subprocess.run('winget install "FFmpeg (Essentials Build)"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
             if result.returncode == 0: 
-                print("Instalacija je uspjesna nastavak programa.")
+                
+                print("Instalacija je uspjesna nastavak programa...")
+                time.sleep(2)
+                
+                subprocess.call([sys.executable], sys.argv)
+                sys.exit()
+                                
             else: 
                 print("Instalacija nije uspjesna!")
                 exit(-1)
