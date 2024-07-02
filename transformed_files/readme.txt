@@ -1,0 +1,1 @@
+Ovaj folder se ponaša kao defaultno spremište svih mp3 dodataka koji se skidaju preko ovog downloadera.
