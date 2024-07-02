@@ -1,6 +1,4 @@
-from pytube import YouTube
-from pytube.exceptions import VideoUnavailable
-from pydub import AudioSegment
+# integrated libs
 import subprocess
 import argparse
 import os
@@ -8,6 +6,22 @@ import sys
 import math
 import threading
 import time
+
+# dependent libs
+print("Pregled modula potrebnih za funkcionalnost programa...")
+
+installThread1 = threading.Thread(target = lambda : subprocess.run("pip install pytube", stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True), args=())
+installThread2 = threading.Thread(target = lambda : subprocess.run("pip install pydub", stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True), args=())
+
+installThread1.start()
+installThread2.start()
+
+installThread1.join()
+installThread2.join()
+
+from pytube import YouTube
+from pytube.exceptions import VideoUnavailable
+from pydub import AudioSegment
 
 parser = argparse.ArgumentParser("Youtube to MP3 converter argument parser.")
 
@@ -60,7 +74,7 @@ def transform_and_save(url_list: list, path_to_save = "./transformed_files/"):
         yt = YouTube(link)
         video_stream = yt.streams.filter(only_audio=True).first()
         
-        task_list[0] = f"Skidanje videja - {yt.title}..."
+        task_list[0] = f"Skidanje videja - {yt.title[:10]}..."
         
         downloaded_file_path = video_stream.download(output_path=path_to_save)
         
@@ -72,7 +86,7 @@ def transform_and_save(url_list: list, path_to_save = "./transformed_files/"):
             mp3_file_path = base + f"({counter})" + ".mp3" 
             counter += 1
         
-        task_list[0] = f"Transformacija {yt.title} u mp3 format..."    
+        task_list[0] = f"Transformacija {yt.title[:10]}... u mp3 format..."    
         
         audio = AudioSegment.from_file(downloaded_file_path)
         audio.export(mp3_file_path, format="mp3")
@@ -83,17 +97,9 @@ def transform_and_save(url_list: list, path_to_save = "./transformed_files/"):
 
 def main():
     
-    print("Pregled modula potrebnih za funkcionalnost programa...")
-    
-    result = subprocess.run(["ffmpeg", "-version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    
-    pipInstall = subprocess.run("pip install pytube", stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
-    
-    if pipInstall.returncode != 0:
-       print("Greska u inicijalizaciji paketa za operativnost programa")
-       exit(-2) 
-    
-    if result.returncode != 0: 
+    try:
+        result = subprocess.run(["ffmpeg", "-version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    except Exception: 
         print("Modul 'ffmpeg' nije instaliran i trazen je za nastavak. Pritisnite [Y] za instalaciju, te [N] za gasenje programa.", end="\t")
         if input() == "Y":
             result = subprocess.run('winget install "FFmpeg (Essentials Build)"', stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
